@@ -1,120 +1,139 @@
-jQuery(function($) {
+require.config({
+  baseUrl: '/assets/js/',
 
-    /* ============================================================ */
-    /* Scroll To Top */
-    /* ============================================================ */
+  paths: {
+    'jquery': 'vendor/jquery'
+  },
 
-    $('.js-jump-top').on('click', function(e) {
-        e.preventDefault();
-
-        $('html, body').animate({'scrollTop': 0});
-    });
-
-    /* ============================================================ */
-    /* Ajax Loading */
-    /* ============================================================ */
-
-    var History = window.History;
-    var loading = false;
-    var showIndex = false;
-    var $ajaxContainer = $('#ajax-container');
-    var $latestPost = $('#latest-post');
-    var $postIndex = $('#post-index');
-
-    // Initially hide the index and show the latest post
-    $latestPost.show();
-    $postIndex.hide();
-
-    // Show the index if the url has "page" in it (a simple
-    // way of checking if we're on a paginated page.)
-    if (window.location.pathname.indexOf('page') === 1) {
-        $latestPost.hide();
-        $postIndex.show();
+  shim: {
+    'vendor/history': {
+      deps: ['jquery'],
+      exports: 'History'
+    },
+    'vendor/nprogress': {
+      deps: ['jquery'],
+      exports: 'NProgress'
     }
+  }
+});
 
-    // Check if history is enabled for the browser
-    if ( ! History.enabled) {
-        return false;
-    }
+define(function(require) {
+  var $ = require('jquery'),
+      History = require('vendor/history'),
+      NProgress = require('vendor/nprogress');
 
-    History.Adapter.bind(window, 'statechange', function() {
-        var State = History.getState();
+  /* ============================================================ */
+  /* Scroll To Top */
+  /* ============================================================ */
 
-        // Get the requested url and replace the current content
-        // with the loaded content
-        $.get(State.url, function(result) {
-            var $html = $(result);
-            var $newContent = $('#ajax-container', $html).contents();
+  $('.js-jump-top').on('click', function(e) {
+    $('html, body').animate({'scrollTop': 0});
+    return false;
+  });
 
-            $('html, body').animate({'scrollTop': 0});
+  /* ============================================================ */
+  /* Ajax Loading */
+  /* ============================================================ */
 
-            $ajaxContainer.fadeOut(500, function() {
-                $latestPost = $newContent.filter('#latest-post');
-                $postIndex = $newContent.filter('#post-index');
+  var loading = false,
+      showIndex = false,
+      $ajaxContainer = $('#ajax-container'),
+      $latestPost = $('#latest-post'),
+      $postIndex = $('#post-index');
 
-                if (showIndex === true) {
-                    $latestPost.hide();
-                } else {
-                    $latestPost.show();
-                    $postIndex.hide();
-                }
+  // Initially hide the index and show the latest post
+  $latestPost.show();
+  $postIndex.hide();
 
-                $ajaxContainer.html($newContent);
-                $ajaxContainer.fadeIn(500);
+  // Show the index if the url has "page" in it (a simple
+  // way of checking if we're on a paginated page.)
+  if (window.location.pathname.indexOf('page') === 1) {
+    $latestPost.hide();
+    $postIndex.show();
+  }
 
-                NProgress.done();
+  // Check if history is enabled for the browser
+  if ( ! History.enabled) {
+    return false;
+  }
 
-                loading = false;
-                showIndex = false;
-            });
-        });
-    });
+  History.Adapter.bind(window, 'statechange', function() {
+    var State = History.getState();
 
-    $('body').on('click', '.js-ajax-link, .pagination a', function(e) {
-        e.preventDefault();
+    // Get the requested url and replace the current content
+    // with the loaded content
+    $.get(State.url, function(result) {
+      var $html = $(result);
+      var $newContent = $('#ajax-container', $html).contents();
 
-        if (loading === false) {
-            var currentState = History.getState();
-            var url = $(this).attr('href');
-            var title = $(this).attr('title') || null;
+      $('html, body').animate({'scrollTop': 0});
 
-            // If the requested url is not the current states url push
-            // the new state and make the ajax call.
-            if (url !== currentState.url.replace(/\/$/, "")) {
-                loading = true;
+      $ajaxContainer.fadeOut(500, function() {
+        $latestPost = $newContent.filter('#latest-post');
+        $postIndex = $newContent.filter('#post-index');
 
-                // Check if we need to show the post index after we've
-                // loaded the new content
-                if ($(this).hasClass('js-show-index') || $(this).parent('.pagination').length > 0) {
-                    showIndex = true;
-                }
-
-                NProgress.start();
-
-                History.pushState({}, title, url);
-            } else {
-                // Swap in the latest post or post index as needed
-                if ($(this).hasClass('js-show-index')) {
-                    $('html, body').animate({'scrollTop': 0});
-
-                    NProgress.start();
-
-                    $latestPost.fadeOut(300, function() {
-                        $postIndex.fadeIn(300);
-                        NProgress.done();
-                    });
-                } else {
-                    $('html, body').animate({'scrollTop': 0});
-
-                    NProgress.start();
-
-                    $postIndex.fadeOut(300, function() {
-                        $latestPost.fadeIn(300);
-                        NProgress.done();
-                    });
-                }
-            }
+        if (showIndex === true) {
+          $latestPost.hide();
+        } else {
+          $latestPost.show();
+          $postIndex.hide();
         }
-    });
 
+        $ajaxContainer.html($newContent);
+        $ajaxContainer.fadeIn(500);
+
+        NProgress.done();
+
+        loading = false;
+        showIndex = false;
+      });
+    });
+  });
+
+  $('body').on('click', '.js-ajax-link, .pagination a', function(e) {
+    e.preventDefault();
+
+    if (loading === false) {
+      var currentState = History.getState();
+      var url = $(this).attr('href');
+      var title = $(this).attr('title') || null;
+
+      // If the requested url is not the current states url push
+      // the new state and make the ajax call.
+      if (url !== currentState.url.replace(/\/$/, "")) {
+        loading = true;
+
+        // Check if we need to show the post index after we've
+        // loaded the new content
+        if ($(this).hasClass('js-show-index') || $(this).parent('.pagination').length > 0) {
+          showIndex = true;
+        }
+
+        NProgress.start();
+
+        History.pushState({}, title, url);
+      } else {
+        // Swap in the latest post or post index as needed
+        if ($(this).hasClass('js-show-index')) {
+          $('html, body').animate({'scrollTop': 0});
+
+          NProgress.start();
+
+          $latestPost.fadeOut(300, function() {
+            $postIndex.fadeIn(300);
+            NProgress.done();
+          });
+        } else {
+          $('html, body').animate({'scrollTop': 0});
+
+          NProgress.start();
+
+          $postIndex.fadeOut(300, function() {
+            $latestPost.fadeIn(300);
+            NProgress.done();
+          });
+        }
+      }
+    }
+  });
 });
