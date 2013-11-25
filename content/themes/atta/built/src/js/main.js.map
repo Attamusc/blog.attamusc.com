@@ -1,0 +1,1 @@
+{"version":3,"file":"src/js/main.js","sources":["src/js/main.js"],"names":[],"mappings":"AAAA,CAAC;YACmC,OAAA","sourcesContent":["$(() => {\n  const { $, History, NProgress } = window;\n});\n"]}

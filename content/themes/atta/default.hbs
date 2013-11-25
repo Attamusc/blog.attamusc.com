@@ -19,13 +19,14 @@
   <body class="{{body_class}}">
 
     <div id="wrapper">
-      <header class="site-header">
-        <div class="container">
-          <div class="site-title-wrapper">
-            <h1 class="site-title"><a class="js-ajax-link" title="{{@blog.title}}" href="{{@blog.url}}">{{@blog.title}}</a></h1>
-            <a class="button-square js-ajax-link js-show-index" href="{{@blog.url}}"><i class="fa fa-bars"></i></a>
-            <a class="button-square" href="{{@blog.url}}/rss"><i class="fa fa-rss"></i></a>
+      <header class="site-header-wrap">
+        <div class="site-header">
+          <div class="site-title">
+            <a class="js-ajax-link" title="{{@blog.title}}" href="{{@blog.url}}">{{@blog.title}}</a>
           </div>
+          <nav class="index">
+            <a class="js-ajax-link js-show-index" href="{{@blog.url}}"><i class="fa fa-bars"></i></a>
+          </nav>
         </div>
       </header>
 
@@ -35,20 +36,19 @@
     </div>
 
     <footer class="footer">
-      <div class="container">
-        <div class="site-title-wrapper">
-          <h1 class="site-title"><a class="js-ajax-link" title="{{@blog.title}}" href="{{@blog.url}}">{{@blog.title}}</a></h1>
+      <a class="button-square top-link js-jump-top" href="#"><i class="fa fa-arrow-up"></i></a>
 
-          <a class="button-square js-jump-top" href="#"><i class="fa fa-arrow-up"></i></a>
-        </div>
-
-        <section class="copyright">All content copyright <a href="/">{{@blog.title}}</a> &copy; 2013 &bull; All rights reserved.</section>
+      <div class="attributions">
+        <section class="copyright">All content copyright <a href="/">{{@blog.title}}</a> &copy; 2013</section>
         <section class="poweredby">Proudly published with <a class="icon-ghost" href="http://ghost.org">Ghost</a></section>
       </div>
     </footer>
 
     {{ghost_foot}}
 
-    <script type="text/javascript" data-main="/assets/js/index.js" src="/assets/js/vendor/require.js"></script>
+    <script type="text/javascript" src="assets/js/vendor/jquery.js"></script>
+    <script type="text/javascript" src="assets/js/vendor/history.js"></script>
+    <script type="text/javascript" src="assets/js/vendor/nprogress.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
   </body>
 </html>

@@ -4,7 +4,7 @@ html, body {
 
 body {
   background: #fefefe;
-  color: #424242;
+  color: $black;
   font-family: "Open Sans", arial, sans-serif;
   font-size: 18px;
 }
@@ -19,7 +19,9 @@ h1 {
 }
 
 h2 {
+  border-bottom: 1px solid $grey;
   font-size: 24px;
+  padding-bottom: 10px;
 }
 
 h3 {
@@ -48,7 +50,7 @@ p {
 }
 
 a {
-  color: #f03838;
+  color: $link;
   text-decoration: none;
 }
 
@@ -91,13 +93,13 @@ pre {
 }
 
 ::selection {
-  background: #FFF5B8;
+  background: $selection;
   color: #000;
   display: block;
 }
 
 ::-moz-selection {
-  background: #FFF5B8;
+  background: $selection;
   color: #000;
   display: block;
 }

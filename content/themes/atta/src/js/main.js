@@ -1,45 +1,16 @@
-require.config({
-  baseUrl: '/assets/js/',
+$(() => {
+  const { $, History, NProgress } = window,
+        $ajaxContainer = $('#ajax-container');
 
-  paths: {
-    'jquery': 'vendor/jquery'
-  },
+  let loading = false,
+      showIndex = false,
+      $latestPost = $('#latest-post'),
+      $postIndex = $('#post-index');
 
-  shim: {
-    'vendor/history': {
-      deps: ['jquery'],
-      exports: 'History'
-    },
-    'vendor/nprogress': {
-      deps: ['jquery'],
-      exports: 'NProgress'
-    }
-  }
-});
-
-define(function(require) {
-  var $ = require('jquery'),
-      History = require('vendor/history'),
-      NProgress = require('vendor/nprogress');
-
-  /* ============================================================ */
-  /* Scroll To Top */
-  /* ============================================================ */
-
-  $('.js-jump-top').on('click', function(e) {
+  $('.js-jump-top').on('click', (e) => {
     $('html, body').animate({'scrollTop': 0});
     return false;
   });
-
-  /* ============================================================ */
-  /* Ajax Loading */
-  /* ============================================================ */
-
-  var loading = false,
-      showIndex = false,
-      $ajaxContainer = $('#ajax-container'),
-      $latestPost = $('#latest-post'),
-      $postIndex = $('#post-index');
 
   // Initially hide the index and show the latest post
   $latestPost.show();
@@ -53,28 +24,29 @@ define(function(require) {
   }
 
   // Check if history is enabled for the browser
-  if ( ! History.enabled) {
+  if ( !History.enabled) {
     return false;
   }
 
-  History.Adapter.bind(window, 'statechange', function() {
-    var State = History.getState();
+  History.Adapter.bind(window, 'statechange', () => {
+    let state = History.getState();
 
     // Get the requested url and replace the current content
     // with the loaded content
-    $.get(State.url, function(result) {
-      var $html = $(result);
-      var $newContent = $('#ajax-container', $html).contents();
+    $.get(state.url, (result) => {
+      const $html = $(result),
+            $newContent = $('#ajax-container', $html).contents();
 
       $('html, body').animate({'scrollTop': 0});
 
-      $ajaxContainer.fadeOut(500, function() {
+      $ajaxContainer.fadeOut(500, () => {
         $latestPost = $newContent.filter('#latest-post');
         $postIndex = $newContent.filter('#post-index');
 
-        if (showIndex === true) {
+        if (showIndex) {
           $latestPost.hide();
-        } else {
+        }
+        else {
           $latestPost.show();
           $postIndex.hide();
         }
@@ -93,42 +65,46 @@ define(function(require) {
   $('body').on('click', '.js-ajax-link, .pagination a', function(e) {
     e.preventDefault();
 
+    const $this = $(this);
+
     if (loading === false) {
-      var currentState = History.getState();
-      var url = $(this).attr('href');
-      var title = $(this).attr('title') || null;
+      let currentState = History.getState(),
+          url = $this.attr('href'),
+          title = $this.attr('title') || null;
 
       // If the requested url is not the current states url push
       // the new state and make the ajax call.
-      if (url !== currentState.url.replace(/\/$/, "")) {
+      if (url !== currentState.url.replace(/\/$/, '')) {
         loading = true;
 
         // Check if we need to show the post index after we've
         // loaded the new content
-        if ($(this).hasClass('js-show-index') || $(this).parent('.pagination').length > 0) {
+        if ($this.hasClass('js-show-index') || $this.parent('.pagination').length) {
           showIndex = true;
         }
 
         NProgress.start();
 
         History.pushState({}, title, url);
-      } else {
+      }
+      else {
         // Swap in the latest post or post index as needed
-        if ($(this).hasClass('js-show-index')) {
+        if ($this.hasClass('js-show-index')) {
           $('html, body').animate({'scrollTop': 0});
 
           NProgress.start();
 
-          $latestPost.fadeOut(300, function() {
+          $latestPost.fadeOut(300, () => {
             $postIndex.fadeIn(300);
             NProgress.done();
           });
-        } else {
+        }
+        else {
           $('html, body').animate({'scrollTop': 0});
 
           NProgress.start();
 
-          $postIndex.fadeOut(300, function() {
+          $postIndex.fadeOut(300, () => {
             $latestPost.fadeIn(300);
             NProgress.done();
           });
